@@ -1,24 +1,24 @@
-import logo from './logo.svg';
+import { ThemeProvider,Grid } from '@material-ui/core';
 import './App.css';
+import theme from './theme/theme'
+import Header from './components/Header'
+import Searchbar from './components/Searchbar'
+import NewJobModal from './components/job/NewJobModal';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+    <ThemeProvider theme={theme} >
+      <Header />
+      <NewJobModal />
+      <Grid container justify="center">
+        <Grid item xs={10}>
+          <Searchbar />
+        </Grid>
+      </Grid>
+    </ThemeProvider>
+      
+    </>
   );
 }
 

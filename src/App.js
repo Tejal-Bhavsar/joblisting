@@ -4,6 +4,7 @@ import theme from './theme/theme'
 import Header from './components/Header'
 import Searchbar from './components/Searchbar'
 import NewJobModal from './components/job/NewJobModal';
+import JobData from './DummyData'
 
 function App() {
   return (

@@ -1,6 +1,7 @@
 import React from 'react'
 import JobCard from '../components/job/JobCard'
-import { Box, Button,Select,MenuItem,makeStyles } from '@material-ui/core'
+import { Box, Button,Select,MenuItem,makeStyles } from '@material-ui/core';
+import JobData from '../DummyData'
 
 const useStyles =  makeStyles({
     wrapper: {
@@ -30,8 +31,24 @@ export default function Searchbar() {
                 <MenuItem value="in office">in office</MenuItem>
             </Select>
             <Button color="primary" variant="contained">Search</Button>
-        </Box>
-        <JobCard />
+        </Box> 
+
+        { 
+         JobData.map((job) => (
+            
+             <JobCard key={job.id} job={job}/>
+             
+            
+             
+         ))
+         
+         
+         
+        }
+        
+        {/* <JobCard />
+        <JobCard /> */}
+        
         </>
     )
 }

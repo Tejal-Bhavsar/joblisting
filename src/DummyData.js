@@ -1,4 +1,4 @@
-export default [
+const JobData =  [
     {
       id: 1,
       postedOn: new Date(),
@@ -34,3 +34,4 @@ export default [
     },
   ];
   
+export default JobData;

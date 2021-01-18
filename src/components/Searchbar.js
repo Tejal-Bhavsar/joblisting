@@ -1,7 +1,10 @@
-import React from 'react'
+import React,{ useState,useEffect} from 'react'
 import JobCard from '../components/job/JobCard'
-import { Box, Button,Select,MenuItem,makeStyles } from '@material-ui/core';
+import { Box, Button,Select,MenuItem,makeStyles, CircularProgress } from '@material-ui/core';
+import db from '../firebase'
 import JobData from '../DummyData'
+import NewJobModal from '../components/job/NewJobModal'
+import { RemoveFromQueueTwoTone } from '@material-ui/icons';
 
 const useStyles =  makeStyles({
     wrapper: {
@@ -17,6 +20,23 @@ const useStyles =  makeStyles({
     }
 })
 export default function Searchbar() {
+    const [ jobs, setjobs ] = useState()
+    const [ loading,setloading] = useState(true)
+
+
+    useEffect(() => {
+       fetchJobs()
+    })
+
+    const fetchJobs = async () => {
+        const req = await db.collection("jobs").get();
+        const tempJobs = req.docs.map((job) => job.data )
+        setjobs(tempJobs);
+        setloading(false)
+    }
+
+   
+
     const classes = useStyles();
     return (
        <>
@@ -34,12 +54,12 @@ export default function Searchbar() {
         </Box> 
 
         { 
+         loading ? 
+         <Box justifyContent="center" display="flex">
+             <CircularProgress /> 
+        </Box>:
          JobData.map((job) => (
-            
-             <JobCard key={job.id} job={job}/>
-             
-            
-             
+             <JobCard key={job.id} job={job}/>   
          ))
          
          
@@ -48,7 +68,7 @@ export default function Searchbar() {
         
         {/* <JobCard />
         <JobCard /> */}
-        
+       
         </>
     )
 }

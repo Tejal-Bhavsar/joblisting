@@ -1,22 +1,41 @@
 import { DialogContent,Dialog,DialogTitle,Select,MenuItem, FilledInput, Grid,Box,Typography,DialogActions,Button, makeStyles ,IconButton } from '@material-ui/core'
 import {  Close as CloseIcon } from '@material-ui/icons'
-import React from 'react'
+import React, { useState } from 'react'
+import db from '../../firebase'
+import firebase from 'firebase'
  
 const useStyles = makeStyles(theme => ({
     skillChips: {
         margin: 5,
-        padding: 2,
+        padding: 3,
         fontSize: "14.5",
         borderRadius: "5px",
         transition: "0.3s",
         cursor: "pointer",
         fontWeight: 600,
-        backgroundColor: "#0B0B15",
-        color:"white"
-
+        border: "2px solid #0B0B15",
+        color:"#0B0B15",
+        "&:hover" : {
+            backgroundColor: " #0B0B15",
+            color: "white"
+        }
+    },
+    included: {
+        backgroundColor: " #0B0B15",
+        color: "white"
     }
 }))
 export default function NewJobModal() {
+    const [ jobDetails, setJobDetails ] = useState({
+        title: "",
+        type: "full time",
+        companyName: "",
+        companyUrl: "",
+        location: "remote",
+        link: " ",
+        description: "",
+        skills: []
+    })
     const classes = useStyles();
     const skills = [
         "javascript",
@@ -24,6 +43,29 @@ export default function NewJobModal() {
         "HTML",
         "RUBY"
     ]
+
+    const handleChange = (e) => {
+        e.persist();
+        setJobDetails((oldState) => ({
+            ...oldState,
+            [e.target.name]: e.target.value,
+        }))
+        console.log(jobDetails)
+    }
+    const addRemoveSkills = (skill) =>   jobDetails.skills.includes(skill) ? 
+        // remove 
+        setJobDetails(oldState => ({...oldState, skills: oldState.skills.filter((s) => s !== skill)})) : setJobDetails((oldState) => ({
+            ...oldState,
+            skills: oldState.skills.concat(skill)
+        }))
+        // add 
+
+      const  postJob = async jobDetails => {
+            await db.collection("jobs").add({...jobDetails})
+        }
+    const handleSubmit = async () => {
+        await postJob(jobDetails);
+    }
     return (
         <Dialog open={true} fullWidth >
             <DialogTitle>
@@ -38,34 +80,51 @@ export default function NewJobModal() {
                 <DialogContent>
                     <Grid container spacing={2}> 
                     <Grid item xs={6} >
-                        <FilledInput fullWidth placeholder="job title *" disableUnderline/>
+                        <FilledInput 
+                        onChange={handleChange}                         name="title"
+                        value={jobDetails.title} autoComplete="off" fullWidth placeholder="job title *" disableUnderline/>
                     </Grid>
                     <Grid item xs={6} >
-                     <Select fullWidth variant="filled" disableUnderline defaultValue="full time">
+                     <Select fullWidth variant="filled" 
+                     onChange={handleChange}
+                     value={jobDetails.type}
+                     name="type" disableUnderline >
                         <MenuItem value="full time" >Full Time</MenuItem>
                         <MenuItem value="part Time">Part Time</MenuItem>
-                        <MenuItem value="contract">Remote Time</MenuItem>
                      </Select>
                     </Grid>
                     <Grid item xs={6} >
-                        <FilledInput fullWidth placeholder="company  name *" disableUnderline/>
+                        <FilledInput 
+                        onChange={handleChange}
+                         autoComplete="off" fullWidth 
+                        value={jobDetails.companyName}
+                        name="companyName" placeholder="company  name *" disableUnderline/>
                     </Grid>
                     <Grid item xs={6} >
-                        <FilledInput fullWidth placeholder="company URL *" disableUnderline/>
+                        <FilledInput 
+                        onChange={handleChange} 
+                        autoComplete="off"
+                        value={jobDetails.companyUrl}
+                        name="companyUrl" fullWidth placeholder="company URL *" disableUnderline/>
                     </Grid>
                     <Grid item xs={6} >
-                        <Select fullWidth variant="filled" disableUnderline defaultValue="remote">
-                        <MenuItem value="remote" >Full Time</MenuItem>
-                        <MenuItem value="in office">Part Time</MenuItem>
+                        <Select fullWidth variant="filled" 
+                        value={jobDetails.location} name="location" disableUnderline >
+                        <MenuItem value="remote" >remote</MenuItem>
+                        <MenuItem value="in office">in office</MenuItem>
                         
                         </Select>
                     </Grid>
                     <Grid item xs={6} >
-                        <FilledInput fullWidth placeholder="Job Link" disableUnderline/>
+                        <FilledInput onChange={handleChange} autoComplete="off" fullWidth 
+                        value={jobDetails.link} name="link"
+                        placeholder="Job Link" disableUnderline/>
                     </Grid>
                     <Grid item xs={12} >
-                        <FilledInput fullWidth
+                        <FilledInput onChange={handleChange} autoComplete="off" fullWidth
                          placeholder="Job Description"
+                         value={jobDetails.description}
+                         name="description"
                          disableUnderline
                          fullWidth
                          multiline
@@ -76,14 +135,14 @@ export default function NewJobModal() {
                     <Box mt={2}>
                       <Typography>Skills</Typography>
                       <Box display="flex">
-                           {skills.map((skill) => <Box className={classes.skillChips} key={skill} p={2}>{skill}</Box>)}
+                           {skills.map((skill) => <Box className={`${classes.skillChips} ${jobDetails.skills.includes(skill) && classes.included}`} onClick={() => addRemoveSkills(skill)} key={skill} p={2}>{skill}</Box>)}
                       </Box>
                     </Box>
                 </DialogContent>
                 <DialogActions>
                     <Box color="red" width="100%" display="flex" justifyContent="space-between">
                         <Typography varient="caption">Requred fields*</Typography>
-                        <Button variant="contained" disableElevation color="primary">Post a Job</Button>
+                        <Button onClick={handleSubmit} variant="contained" disableElevation color="primary">Post a Job</Button>
                     </Box>
                 </DialogActions>
             </DialogTitle>

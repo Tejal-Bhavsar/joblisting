@@ -39,15 +39,15 @@ export default function JobCard({job}) {
     console.log(job)
     const classes = useStyles()
     return (
-        <Box p={2} className={classes.wrapper}>
-            {console.log("hello")}
+        <Box p={2} mb={4} className={classes.wrapper}>
+            {console.log("amogo",job)}
             <Grid container  alignItems="center">
                 <Grid item xs >
                     <Typography variant="subtitle1">{ job.title }</Typography>
                     <Typography className={classes.companyName} variant="subtitle2">{job.companyName}</Typography>
                 </Grid>
                 <Grid item  container xs >
-                    {job.skills.map((skill) => <Grid className={classes.skillChips} key={skill} item>{skill}</Grid> )}
+                    {job.skills.map((skill) => (<Grid className={classes.skillChips} key={skill} item>{skill}</Grid>) )}
                 </Grid>
                 <Grid item container direction="column" alignItems="flex-end" xs >
                     <Grid item>

@@ -1,4 +1,4 @@
-import { DialogContent,Dialog,DialogTitle,Select,MenuItem, FilledInput, Grid,Box,Typography,DialogActions,Button, makeStyles ,IconButton } from '@material-ui/core'
+import { DialogContent,Dialog,DialogTitle,Select,MenuItem, FilledInput, Grid,Box,Typography,DialogActions,Button, makeStyles ,IconButton, CircularProgress } from '@material-ui/core'
 import {  Close as CloseIcon } from '@material-ui/icons'
 import React, { useState } from 'react'
 import db from '../../firebase'
@@ -25,8 +25,8 @@ const useStyles = makeStyles(theme => ({
         color: "white"
     }
 }))
-export default function NewJobModal() {
-    const [ jobDetails, setJobDetails ] = useState({
+export default function NewJobModal({newModal,closeModal}) {
+    const initialState = {
         title: "",
         type: "full time",
         companyName: "",
@@ -35,7 +35,9 @@ export default function NewJobModal() {
         link: " ",
         description: "",
         skills: []
-    })
+    }
+    const [ jobDetails, setJobDetails ] = useState(initialState)
+    const [ loading, setloading ] = useState(false)
     const classes = useStyles();
     const skills = [
         "javascript",
@@ -43,6 +45,11 @@ export default function NewJobModal() {
         "HTML",
         "RUBY"
     ]
+
+    const setcloseModal = () => {
+        setJobDetails(initialState);
+        closeModal()
+    }
 
     const handleChange = (e) => {
         e.persist();
@@ -64,14 +71,16 @@ export default function NewJobModal() {
             await db.collection("jobs").add({...jobDetails})
         }
     const handleSubmit = async () => {
+        setloading(true);
         await postJob(jobDetails);
+        setloading(false);
     }
     return (
-        <Dialog open={true} fullWidth >
+        <Dialog open={newModal} fullWidth >
             <DialogTitle>
                 <Box display="flex" justifyContent='space-between' alignItems="center">
                     Post Job
-                    <IconButton>
+                    <IconButton onClick={setcloseModal}>
                         <CloseIcon />
                     </IconButton>
                 </Box>
@@ -142,7 +151,16 @@ export default function NewJobModal() {
                 <DialogActions>
                     <Box color="red" width="100%" display="flex" justifyContent="space-between">
                         <Typography varient="caption">Requred fields*</Typography>
-                        <Button onClick={handleSubmit} variant="contained" disableElevation color="primary">Post a Job</Button>
+
+                        <Button onClick={handleSubmit} 
+                        variant="contained" 
+                        disable={loading}
+                        disableElevation
+                         color="primary">
+                            { loading ? <CircularProgress color="secondary" size={22}/> :
+                            ("Post a Job")  }
+                             
+                             </Button>
                     </Box>
                 </DialogActions>
             </DialogTitle>

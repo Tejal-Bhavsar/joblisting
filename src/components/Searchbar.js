@@ -20,20 +20,27 @@ const useStyles =  makeStyles({
     }
 })
 export default function Searchbar() {
-    const [ jobs, setjobs ] = useState()
+    const [ jobs, setjobs ] = useState([])
     const [ loading,setloading] = useState(true)
+   
 
-
-    useEffect(() => {
-       fetchJobs()
-    })
 
     const fetchJobs = async () => {
         const req = await db.collection("jobs").get();
-        const tempJobs = req.docs.map((job) => job.data )
+        // console.log(req,"req")
+        const tempJobs = req.docs.map((job) => ({...job.data()})  )
         setjobs(tempJobs);
         setloading(false)
+        
     }
+
+    useEffect(() => {
+    //    db.collection("jobs").onSnapshot((snapshot) => setjobs(snapshot.docs.map((doc) => ({id:doc.id,
+    //     data: doc.data()}))))
+    fetchJobs();
+       
+    },[])
+
 
    
 
@@ -57,14 +64,14 @@ export default function Searchbar() {
          loading ? 
          <Box justifyContent="center" display="flex">
              <CircularProgress /> 
-        </Box>:
-         JobData.map((job) => (
+        </Box>:  jobs.map((job) => (
              <JobCard key={job.id} job={job}/>   
          ))
          
          
          
         }
+        {console.log(jobs,"mila h")}
         
         {/* <JobCard />
         <JobCard /> */}

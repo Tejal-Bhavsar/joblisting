@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
         color: "white"
     }
 }))
-export default function NewJobModal({newModal,closeModal}) {
+export default function NewJobModal({newModal,closeModal }) {
     const initialState = {
         title: "",
         type: "full time",
@@ -38,12 +38,17 @@ export default function NewJobModal({newModal,closeModal}) {
     }
     const [ jobDetails, setJobDetails ] = useState(initialState)
     const [ loading, setloading ] = useState(false)
+    
     const classes = useStyles();
     const skills = [
         "javascript",
         "CSS",
         "HTML",
-        "RUBY"
+        "RUBY",
+        
+        "React js",
+        
+        
     ]
 
     const setcloseModal = () => {
@@ -69,8 +74,14 @@ export default function NewJobModal({newModal,closeModal}) {
 
       const  postJob = async jobDetails => {
             await db.collection("jobs").add({...jobDetails})
+            // fetchJobs()
+
         }
     const handleSubmit = async () => {
+        for (const field in jobDetails ) {
+            if(typeof jobDetails[field] === "string" && !jobDetails[field]) return; 
+        }
+        if (!jobDetails.skills.length) return
         setloading(true);
         await postJob(jobDetails);
         setloading(false);
@@ -118,7 +129,8 @@ export default function NewJobModal({newModal,closeModal}) {
                     </Grid>
                     <Grid item xs={6} >
                         <Select fullWidth variant="filled" 
-                        value={jobDetails.location} name="location" disableUnderline >
+                        value={jobDetails.location} 
+                        onChange={handleChange} name="location" disableUnderline >
                         <MenuItem value="remote" >remote</MenuItem>
                         <MenuItem value="in office">in office</MenuItem>
                         
